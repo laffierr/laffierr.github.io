@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { Photo } from '../types/photo'
-import { CATEGORIES } from '../types/photo'
 
-const props = defineProps<{ photo: Photo }>()
+defineProps<{ photo: Photo }>()
 const emit = defineEmits<{ (e: 'click', photo: Photo): void }>()
 
 const isLoaded = ref(false)
@@ -11,37 +10,39 @@ const isLoaded = ref(false)
 
 <template>
   <article
-    class="group relative cursor-pointer overflow-hidden rounded-xl bg-gray-100 transition-all duration-400 hover:shadow-2xl hover:shadow-black/15 hover:-translate-y-1"
+    class="photo-card relative cursor-pointer overflow-hidden rounded-md bg-gray-100 animate-in"
     @click="emit('click', photo)"
   >
-    <!-- Image -->
     <img
-      :src="photo.thumbnail"
+      :src="photo.src"
       :alt="photo.title"
-      :width="photo.width"
-      :height="photo.height"
       loading="lazy"
-      class="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
-      :class="isLoaded ? 'img-loaded' : 'opacity-0'"
+      class="w-full block"
+      :class="isLoaded ? '' : 'opacity-0'"
       @load="isLoaded = true"
     />
 
     <!-- Hover overlay -->
     <div
-      class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-    />
-    <div
-      class="absolute bottom-0 left-0 right-0 p-4 text-white translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300"
+      class="card-overlay absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent opacity-0 transition-opacity duration-300"
     >
-      <p class="text-sm font-semibold leading-snug">{{ photo.title }}</p>
-      <p class="text-xs text-white/60 mt-0.5">{{ photo.location }}</p>
+      <div class="absolute bottom-0 left-0 right-0 p-4 flex items-end justify-between">
+        <div>
+          <p class="text-white text-sm font-medium leading-snug">{{ photo.title }}</p>
+          <p class="text-white/60 text-xs mt-0.5">{{ photo.location }}</p>
+        </div>
+        <button
+          class="shrink-0 w-8 h-8 flex items-center justify-center rounded-md bg-white/20 hover:bg-white/30 text-white transition-colors"
+          @click.stop="emit('click', photo)"
+          title="下载"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+        </button>
+      </div>
     </div>
-
-    <!-- Category badge -->
-    <span
-      class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md text-[10px] font-medium bg-white/90 text-gray-700 shadow-sm backdrop-blur-sm"
-    >
-      {{ CATEGORIES[photo.category] }}
-    </span>
   </article>
 </template>

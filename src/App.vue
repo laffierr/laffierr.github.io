@@ -8,8 +8,8 @@ import type { Photo } from './types/photo'
 const lightbox = useLightbox()
 const { photos, categories, activeCategory, searchQuery, setCategory } = usePhotos()
 
-const handlePhotoClick = (photo: Photo) => lightbox.open(photo)
-const handleDownload = (photo: Photo) => { window.open(photo.src, '_blank') }
+function openPhoto(p: Photo) { lightbox.open(p) }
+function download(p: Photo) { window.open(p.src, '_blank') }
 </script>
 
 <template>
@@ -20,106 +20,90 @@ const handleDownload = (photo: Photo) => { window.open(photo.src, '_blank') }
       @select-category="setCategory"
     />
 
-    <!-- Hero: Unsplash-style centered search -->
-    <section
-      v-if="!activeCategory && !searchQuery"
-      class="py-16 sm:py-24 md:py-32 text-center px-4"
-    >
-      <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-black tracking-tight leading-tight">
-        Frames
-      </h1>
-      <p class="mt-3 text-lg sm:text-xl text-gray-500 max-w-lg mx-auto">
-        每一帧都是时间的切片
-      </p>
-      <div class="mt-8 max-w-xl mx-auto">
-        <div class="relative">
-          <svg
-            class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
-            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="搜索照片..."
-            class="w-full pl-12 pr-4 py-3.5 text-base rounded-md bg-gray-100 border-0 placeholder:text-gray-400 focus:outline-none focus:bg-gray-50 focus:ring-2 focus:ring-gray-200 transition-colors"
-          />
+    <!-- Hero: centered search (Unsplash style) -->
+    <div class="max-w-[1320px] mx-auto px-4 sm:px-5">
+      <div class="flex flex-col items-center py-12 sm:py-20 md:py-28">
+        <h1 class="text-[28px] sm:text-[36px] md:text-[44px] font-bold text-black tracking-tight">
+          Frames
+        </h1>
+        <p class="mt-2 text-[15px] sm:text-[17px] text-[#767676] max-w-md text-center leading-relaxed">
+          用镜头捕捉光的形状，每一帧都是不可复制的瞬间。
+        </p>
+
+        <!-- Search bar -->
+        <div class="mt-6 w-full max-w-[620px] mx-auto">
+          <div class="relative">
+            <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-[#767676]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="搜索高分辨率图片"
+              class="w-full h-[54px] pl-12 pr-5 text-[15px] bg-[#f5f5f5] hover:bg-[#eee] border-0 rounded-lg text-black placeholder-[#767676] focus:outline-none focus:bg-white focus:ring-1 focus:ring-[#d1d1d1] transition-colors"
+            />
+          </div>
         </div>
       </div>
-    </section>
 
-    <!-- Category bar (only show when not on "all") -->
-    <div
-      v-if="activeCategory && !searchQuery"
-      class="text-center py-8 px-4"
-    >
-      <p class="text-sm text-gray-400">
-        <button class="hover:text-black transition-colors underline underline-offset-2" @click="setCategory(null)">全部</button>
-        <span class="mx-1">/</span>
-        <span class="text-black font-medium">{{ categories.find(c => c.key === activeCategory)?.label }}</span>
-      </p>
-    </div>
+      <!-- Active filter indicator -->
+      <div v-if="activeCategory" class="flex items-center gap-2 pb-8">
+        <span class="text-sm text-[#767676]">分类：</span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 text-sm font-medium bg-[#f5f5f5] rounded-md">
+          {{ categories.find(c => c.key === activeCategory)?.label }}
+          <button class="text-[#767676] hover:text-black" @click="setCategory(null)">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </span>
+      </div>
 
-    <!-- Search result notice -->
-    <div
-      v-if="searchQuery"
-      class="text-center py-8 px-4"
-    >
-      <p class="text-sm text-gray-500">
-        搜索 "<span class="text-black font-medium">{{ searchQuery }}</span>" —
-        <span class="font-medium">{{ photos.length }}</span> 张照片
-      </p>
+      <!-- Search results -->
+      <div v-if="searchQuery" class="pb-8">
+        <p class="text-[28px] font-bold text-black">{{ searchQuery }}</p>
+        <p class="text-[15px] text-[#767676] mt-0.5">{{ photos.length }} 张照片</p>
+      </div>
     </div>
 
     <!-- Masonry grid -->
-    <div class="mx-auto max-w-[1320px] px-4 sm:px-6 pb-16">
-      <div v-if="photos.length > 0" class="masonry">
-        <article
+    <div class="max-w-[1320px] mx-auto px-4 sm:px-5 pb-20">
+      <div v-if="photos.length > 0" class="unsplash-grid">
+        <div
           v-for="photo in photos"
           :key="photo.id"
-          class="photo-card relative cursor-pointer overflow-hidden rounded-md bg-gray-100 animate-in"
-          @click="handlePhotoClick(photo)"
+          class="unsplash-item"
+          @click="openPhoto(photo)"
         >
-          <img
-            :src="photo.src"
-            :alt="photo.title"
-            loading="lazy"
-            class="w-full block"
-          />
-          <div
-            class="card-overlay absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent opacity-0 transition-opacity duration-300"
-          >
-            <div class="absolute bottom-0 left-0 right-0 p-4 flex items-end justify-between">
-              <div>
-                <p class="text-white text-sm font-medium leading-snug">{{ photo.title }}</p>
-                <p class="text-white/60 text-xs mt-0.5">{{ photo.location }}</p>
-              </div>
-              <button
-                class="shrink-0 w-8 h-8 flex items-center justify-center rounded-md bg-white/20 hover:bg-white/30 text-white transition-colors"
-                @click.stop="handleDownload(photo)"
-                title="下载原图"
-              >
+          <img :src="photo.src" :alt="photo.title" loading="lazy" />
+
+          <!-- Hover overlay -->
+          <div class="unsplash-overlay">
+            <div class="flex flex-col">
+              <span class="text-white text-[14px] font-medium leading-tight">{{ photo.title }}</span>
+              <span class="text-white/65 text-[12px] mt-0.5">{{ photo.location }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="unsplash-btn" @click.stop="download(photo)" title="下载">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
+                  <polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
               </button>
             </div>
           </div>
-        </article>
+        </div>
       </div>
 
+      <!-- Empty -->
       <div v-else class="text-center py-24">
-        <p class="text-gray-400 text-sm">没有找到匹配的照片</p>
+        <p class="text-[#767676] text-sm">没有找到匹配的照片</p>
       </div>
     </div>
 
     <!-- Footer -->
-    <footer class="border-t border-gray-100 py-10 text-center">
-      <p class="text-xs text-gray-400">&copy; {{ new Date().getFullYear() }} Frames · 用镜头记录世界</p>
+    <footer class="border-t border-[#f1f1f1] py-6 text-center">
+      <p class="text-xs text-[#aaa]">&copy; {{ new Date().getFullYear() }} Frames</p>
     </footer>
 
     <!-- Lightbox -->

@@ -1,13 +1,7 @@
 @import 'tailwindcss';
 
-@theme {
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    Helvetica, Arial, sans-serif;
-}
-
-*,
-*::before,
-*::after {
+/* Unsplash global styles */
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -19,45 +13,78 @@ html {
 }
 
 body {
-  font-family: var(--font-sans);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
   color: #111;
   background: #fff;
 }
 
-/* ── Unsplash-style masonry grid ── */
-.masonry {
+/* Unsplash masonry grid */
+.unsplash-grid {
   column-count: 3;
   column-gap: 24px;
 }
-.masonry > * {
+.unsplash-grid > * {
   break-inside: avoid;
   margin-bottom: 24px;
 }
-@media (max-width: 1024px) {
-  .masonry { column-count: 2; column-gap: 16px; }
-  .masonry > * { margin-bottom: 16px; }
+@media (max-width: 980px) {
+  .unsplash-grid { column-count: 2; column-gap: 16px; }
+  .unsplash-grid > * { margin-bottom: 16px; }
 }
-@media (max-width: 640px) {
-  .masonry { column-count: 1; column-gap: 0; }
-  .masonry > * { margin-bottom: 12px; }
+@media (max-width: 600px) {
+  .unsplash-grid { column-count: 1; column-gap: 0; }
+  .unsplash-grid > * { margin-bottom: 12px; }
 }
 
-/* ── Card hover ── */
-.photo-card:hover .card-overlay {
+/* Unsplash photo item */
+.unsplash-item {
+  position: relative;
+  cursor: zoom-in;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #eee;
+}
+.unsplash-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform 0.6s ease;
+}
+.unsplash-item:hover img {
+  transform: scale(1.03);
+}
+
+/* Hover overlay */
+.unsplash-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.05) 40%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 16px;
+}
+.unsplash-item:hover .unsplash-overlay {
   opacity: 1;
 }
-.photo-card:hover img {
-  transform: scale(1.04);
-}
-.photo-card img {
-  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
 
-/* ── Animations ── */
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Buttons in overlay */
+.unsplash-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.5);
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
-.animate-in {
-  animation: fade-in 0.4s ease-out both;
+.unsplash-btn:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.8);
 }

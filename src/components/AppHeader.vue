@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Category } from '../types/photo'
 
-const props = defineProps<{
+defineProps<{
   activeCategory: Category | null
   categories: { key: Category; label: string }[]
 }>()
@@ -13,41 +13,38 @@ const emit = defineEmits<{
 
 <template>
   <header class="sticky top-0 z-40 glass border-b border-black/5">
-    <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
-      <!-- Top row: logo -->
-      <div class="flex items-center justify-center py-4">
-        <a href="/" class="flex items-center gap-2.5 select-none">
-          <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-[#0071e3] to-[#40a9ff] flex items-center justify-center shadow-sm">
-            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-              <circle cx="12" cy="13" r="4" />
+    <div class="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
+      <div class="flex items-center justify-between h-14 sm:h-16">
+        <!-- Logo -->
+        <a href="/" class="flex items-center gap-2.5 select-none shrink-0">
+          <div class="w-8 h-8 rounded-lg bg-black flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+              <rect x="3" y="3" width="18" height="18" rx="3" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
             </svg>
           </div>
-          <span class="text-lg font-bold tracking-tight text-[#1d1d1f]">Frames</span>
+          <span class="text-base font-bold tracking-tight text-black">Frames</span>
         </a>
-      </div>
-    </div>
 
-    <!-- Category pills -->
-    <div class="border-t border-black/5">
-      <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
-        <nav class="flex items-center gap-1.5 py-3 overflow-x-auto no-scrollbar">
+        <!-- Category pills -->
+        <nav class="flex items-center gap-1 overflow-x-auto">
           <button
-            class="shrink-0 px-4 py-1.5 text-xs font-medium rounded-full transition-all duration-300"
-            :class="props.activeCategory === null
-              ? 'pill-active bg-[#1d1d1f] text-white shadow-sm'
-              : 'text-gray-500 hover:text-gray-800 hover:bg-gray-200/60'"
+            class="shrink-0 px-3.5 py-1.5 text-[13px] font-medium rounded-full transition-all duration-200 cursor-pointer"
+            :class="activeCategory === null
+              ? 'bg-black text-white'
+              : 'text-gray-500 hover:text-black hover:bg-gray-100'"
             @click="emit('select-category', null)"
           >
             全部
           </button>
           <button
-            v-for="cat in props.categories"
+            v-for="cat in categories"
             :key="cat.key"
-            class="shrink-0 px-4 py-1.5 text-xs font-medium rounded-full transition-all duration-300"
-            :class="props.activeCategory === cat.key
-              ? 'pill-active bg-[#1d1d1f] text-white shadow-sm'
-              : 'text-gray-500 hover:text-gray-800 hover:bg-gray-200/60'"
+            class="shrink-0 px-3.5 py-1.5 text-[13px] font-medium rounded-full transition-all duration-200 cursor-pointer"
+            :class="activeCategory === cat.key
+              ? 'bg-black text-white'
+              : 'text-gray-500 hover:text-black hover:bg-gray-100'"
             @click="emit('select-category', cat.key)"
           >
             {{ cat.label }}
@@ -57,14 +54,3 @@ const emit = defineEmits<{
     </div>
   </header>
 </template>
-
-<style scoped>
-/* Hide scrollbar for category pills */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-</style>
